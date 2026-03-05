@@ -14,7 +14,7 @@ bot.onText(/\/start/, (msg) => {
         [
           {
             text: "🚀 Открыть SafeTrade",
-            web_app: { url: "https://example.com" }
+            web_app: { url: "https://safetrade-bot-production.up.railway.app" }
           }
         ]
       ]
