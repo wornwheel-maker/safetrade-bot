@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>SafeTrade</title>
+
+<script src="https://unpkg.com/@tonconnect/ui@latest/dist/tonconnect-ui.min.js"></script>
+
+<style>
+body{
+font-family: Arial;
+background:#0f172a;
+color:white;
+text-align:center;
+padding:40px;
+}
+
+button{
+padding:15px 25px;
+font-size:18px;
+border:none;
+border-radius:10px;
+margin:10px;
+}
+</style>
+
+</head>
+
+<body>
+
+<h1>SafeTrade</h1>
+
+<div id="ton-connect"></div>
+
+<button onclick="createDeal()">Создать сделку</button>
+
+<script>
+
+const tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
+manifestUrl: 'https://your-domain/tonconnect-manifest.json',
+buttonRootId: 'ton-connect'
+});
+
+function createDeal(){
+alert("Создание сделки скоро будет");
+}
+
+</script>
+
+</body>
+</html>
