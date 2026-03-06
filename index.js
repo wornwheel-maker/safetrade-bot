@@ -4,7 +4,12 @@ const TelegramBot = require("node-telegram-bot-api");
 const app = express();
 const port = process.env.PORT || 3000;
 
-const token = process.env.BOT_TOKEN;
+/*
+ВСТАВЬ СЮДА СВОЙ ТОКЕН ОТ БОТА
+Например:
+const token = "123456789:AAExampleExampleExample";
+*/
+const token = "8663683179:AAHoW_TvnDxGELWlo4RvcQvVhIwdMAKdqWM";
 
 const bot = new TelegramBot(token, { polling: true });
 
