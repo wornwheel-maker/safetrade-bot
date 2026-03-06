@@ -4,13 +4,13 @@ const TelegramBot = require("node-telegram-bot-api");
 const app = express();
 const port = process.env.PORT || 3000;
 
-// Твой токен бота
+// Токен бота
 const token = "8663683179:AAHoW_TvnDxGELWlo4RvcQvVhIwdMAKdqWM";
 
-// Создаём бот без polling (только webhook)
+// Бот без polling, только webhook
 const bot = new TelegramBot(token, { webHook: true });
 
-// Разрешаем серверу обрабатывать JSON
+// Разрешаем получать JSON
 app.use(express.json());
 
 // Отдаём MiniApp
@@ -23,18 +23,21 @@ app.get("/", (req, res) => {
 
 // Webhook маршрут
 app.post(`/bot${token}`, (req, res) => {
-  console.log("Получено обновление:", req.body); // логируем всё, что приходит
-  bot.processUpdate(req.body)
-    .then(() => res.sendStatus(200))
-    .catch((err) => {
-      console.error("Ошибка processUpdate:", err);
-      res.sendStatus(200); // обязательно 200, иначе Telegram будет ругаться
-    });
+  try {
+    bot.processUpdate(req.body)
+      .then(() => res.sendStatus(200))
+      .catch((err) => {
+        console.error("Ошибка processUpdate:", err);
+        res.sendStatus(200); // обязательно 200
+      });
+  } catch (err) {
+    console.error("Ошибка в webhook:", err);
+    res.sendStatus(200);
+  }
 });
 
 // /start обработчик
 bot.onText(/\/start/, (msg) => {
-  console.log("/start от:", msg.chat.id);
   bot.sendMessage(msg.chat.id, "🚀 Добро пожаловать в SafeTrade!", {
     reply_markup: {
       inline_keyboard: [
