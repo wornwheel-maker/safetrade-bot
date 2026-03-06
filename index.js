@@ -7,7 +7,7 @@ const port = process.env.PORT || 3000;
 // Токен бота
 const token = "8663683179:AAHoW_TvnDxGELWlo4RvcQvVhIwdMAKdqWM";
 
-// Бот только через webhook
+// Бот через webhook
 const bot = new TelegramBot(token, { webHook: true });
 
 // Разрешаем получать JSON
@@ -23,20 +23,18 @@ app.get("/", (req, res) => {
 
 // Webhook маршрут
 app.post(`/bot${token}`, (req, res) => {
-  // Логируем все входящие обновления для отладки
   console.log("Получено обновление:", JSON.stringify(req.body, null, 2));
-
   bot.processUpdate(req.body)
-    .then(() => res.sendStatus(200)) // Telegram обязательно ждёт 200
+    .then(() => res.sendStatus(200))
     .catch((err) => {
       console.error("Ошибка processUpdate:", err);
-      res.sendStatus(200); // чтобы Telegram не считала webhook сломанным
+      res.sendStatus(200);
     });
 });
 
 // /start обработчик
 bot.onText(/\/start/, (msg) => {
-  console.log("/start от:", msg.chat.id); // логируем кто нажал
+  console.log("/start от:", msg.chat.id);
   bot.sendMessage(msg.chat.id, "🚀 Добро пожаловать в SafeTrade!", {
     reply_markup: {
       inline_keyboard: [
@@ -51,7 +49,7 @@ bot.onText(/\/start/, (msg) => {
   });
 });
 
-// Устанавливаем webhook на URL с токеном
+// Устанавливаем webhook
 bot.setWebHook(`https://safetrade-bot-production.up.railway.app/bot${token}`)
   .then(() => console.log("Webhook установлен"))
   .catch(console.error);
