@@ -2,7 +2,7 @@ const express = require("express");
 const TelegramBot = require("node-telegram-bot-api");
 
 const app = express();
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 8080;
 
 // Токен бота
 const token = "8663683179:AAHoW_TvnDxGELWlo4RvcQvVhIwdMAKdqWM";
@@ -23,13 +23,17 @@ app.get("/", (req, res) => {
 
 // Webhook маршрут
 app.post(`/bot${token}`, (req, res) => {
-  console.log("Получено обновление:", JSON.stringify(req.body, null, 2));
-  bot.processUpdate(req.body)
-    .then(() => res.sendStatus(200))
-    .catch((err) => {
-      console.error("Ошибка processUpdate:", err);
-      res.sendStatus(200);
-    });
+  try {
+    bot.processUpdate(req.body)
+      .then(() => res.sendStatus(200))
+      .catch(err => {
+        console.error("Ошибка processUpdate:", err);
+        res.sendStatus(200); // обязательно 200, чтобы Telegram не выдавал ошибки
+      });
+  } catch (err) {
+    console.error("Webhook упал:", err);
+    res.sendStatus(200); // даже если try/catch сработал, возвращаем 200
+  }
 });
 
 // /start обработчик
@@ -41,7 +45,7 @@ bot.onText(/\/start/, (msg) => {
         [
           {
             text: "🚀 Открыть SafeTrade",
-            web_app: { url: "https://safetrade-bot-production.up.railway.app/?v=2" }
+            web_app: { url: "https://safetrade-bot-production.up.railway.app/?v=100" }
           }
         ]
       ]
