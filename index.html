@@ -4,47 +4,139 @@
 <meta charset="UTF-8">
 <title>SafeTrade</title>
 
+<!-- Telegram Mini App + TON Connect -->
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
 <script src="https://unpkg.com/@tonconnect/ui@latest/dist/tonconnect-ui.min.js"></script>
 
 <style>
 body{
-font-family: Arial;
-background:#0f172a;
-color:white;
-text-align:center;
-padding:40px;
+  font-family: Arial;
+  background:#0f172a;
+  color:white;
+  text-align:center;
+  padding:40px;
+}
+
+h1, h2{
+  margin-bottom:20px;
 }
 
 button{
-padding:15px 25px;
-font-size:18px;
-border:none;
-border-radius:10px;
-margin:10px;
+  padding:12px 20px;
+  font-size:16px;
+  border:none;
+  border-radius:8px;
+  cursor:pointer;
+  margin-top:10px;
+}
+
+input{
+  padding:10px;
+  width:200px;
+  border-radius:8px;
+  border:none;
+  margin-bottom:10px;
+  background:#1a1a2e;
+  color:white;
+}
+
+.gifts{
+  display:flex;
+  justify-content:center;
+  gap:15px;
+  margin-bottom:20px;
+}
+
+.gift{
+  padding:10px;
+  background:#242424;
+  border-radius:10px;
+  cursor:pointer;
+}
+
+.gift:hover{
+  background:#2e2e2e;
+}
+
+#ton-connect{
+  margin-bottom:30px;
 }
 </style>
-
 </head>
 
 <body>
 
-<h1>SafeTrade</h1>
+<h1>🚀 SafeTrade</h1>
 
+<!-- TON Wallet -->
 <div id="ton-connect"></div>
 
-<button onclick="createDeal()">Создать сделку</button>
+<!-- Подарки -->
+<div id="safe-trade-container">
+  <h2>🎁 Выбери подарок</h2>
+  <div class="gifts">
+    <div class="gift" onclick="selectGift('Bear')">🐻 Bear</div>
+    <div class="gift" onclick="selectGift('Diamond')">💎 Diamond</div>
+    <div class="gift" onclick="selectGift('Rocket')">🚀 Rocket</div>
+    <div class="gift" onclick="selectGift('Heart')">❤️ Heart</div>
+  </div>
+  <p id="selectedGift" style="font-weight:bold;">Выбранный подарок: нет</p>
+
+  <h2>🤝 Создать трейд</h2>
+  <input id="partnerUsername" placeholder="@username партнёра"><br>
+  <input id="giftPrice" placeholder="Цена в TON"><br>
+  <button onclick="createDeal()" style="background:#2ea6ff; color:white;">Создать сделку</button>
+</div>
 
 <script>
+  // Telegram Mini App
+  const tg = window.Telegram.WebApp;
+  tg.expand();
 
-const tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
-manifestUrl: 'https://your-domain/tonconnect-manifest.json',
-buttonRootId: 'ton-connect'
-});
+  // TON Connect
+  const tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
+    manifestUrl: 'https://your-domain.com/tonconnect-manifest.json',
+    buttonRootId: 'ton-connect'
+  });
 
-function createDeal(){
-alert("Создание сделки скоро будет");
-}
+  let selectedGift = null;
 
+  function selectGift(gift){
+    selectedGift = gift;
+    document.getElementById("selectedGift").innerText = "Выбранный подарок: " + gift;
+  }
+
+  function createDeal(){
+    const partner = document.getElementById("partnerUsername").value.trim();
+    const price = document.getElementById("giftPrice").value.trim();
+
+    if (!selectedGift) {
+      alert("Выберите подарок!");
+      return;
+    }
+    if (!partner) {
+      alert("Введите username партнёра!");
+      return;
+    }
+    if (!price || isNaN(price)) {
+      alert("Введите цену в TON!");
+      return;
+    }
+
+    // Пока базовая симуляция сделки
+    alert(
+      "✅ Сделка создана!\n\n" +
+      "Подарок: " + selectedGift + "\n" +
+      "Партнёр: " + partner + "\n" +
+      "Цена: " + price + " TON"
+    );
+
+    // Сброс формы
+    selectedGift = null;
+    document.getElementById("selectedGift").innerText = "Выбранный подарок: нет";
+    document.getElementById("partnerUsername").value = "";
+    document.getElementById("giftPrice").value = "";
+  }
 </script>
 
 </body>
