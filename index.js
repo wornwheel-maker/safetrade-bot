@@ -1,25 +1,34 @@
-const TelegramBot = require('node-telegram-bot-api');
+const express = require("express");
+const TelegramBot = require("node-telegram-bot-api");
 
-const token = '8663683179:AAEETa3tYsbhhxIq-jB_IEoEggC3v8NUNZc'; // Токен только здесь
+const app = express();
+const port = process.env.PORT || 3000;
+
+const token = process.env.BOT_TOKEN;
 
 const bot = new TelegramBot(token, { polling: true });
 
+app.use(express.static("public"));
+
+app.get("/", (req, res) => {
+  res.sendFile(__dirname + "/index.html");
+});
+
 bot.onText(/\/start/, (msg) => {
-
-  const chatId = msg.chat.id;
-
-  const keyboard = {
+  bot.sendMessage(msg.chat.id, "🚀 Добро пожаловать в SafeTrade!", {
     reply_markup: {
       inline_keyboard: [
         [
           {
             text: "🚀 Открыть SafeTrade",
-            web_app: { url: "https://safetrade-bot-production.up.railway.app" }
+            web_app: { url: "https://ТВОЙ-ДОМЕН.railway.app" }
           }
         ]
       ]
     }
-  };
+  });
+});
 
-  bot.sendMessage(chatId, "Добро пожаловать в SafeTrade!", keyboard);
+app.listen(port, () => {
+  console.log("Server started");
 });
