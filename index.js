@@ -4,19 +4,17 @@ const TelegramBot = require("node-telegram-bot-api");
 const app = express();
 const port = process.env.PORT || 8080;
 
-// Токен бота
+// Ваш токен
 const token = "8663683179:AAHoW_TvnDxGELWlo4RvcQvVhIwdMAKdqWM";
 
-// Бот через webhook
+// Инициализация бота через webhook
 const bot = new TelegramBot(token, { webHook: true });
 
-// Разрешаем получать JSON
+// Разрешаем Express парсить JSON
 app.use(express.json());
 
-// Отдаём MiniApp из папки public
+// Отдаём MiniApp
 app.use(express.static("public"));
-
-// Главная страница
 app.get("/", (req, res) => {
   res.sendFile(__dirname + "/public/index.html");
 });
@@ -28,7 +26,7 @@ app.post(`/bot${token}`, (req, res) => {
       .then(() => res.sendStatus(200))
       .catch(err => {
         console.error("Ошибка processUpdate:", err);
-        res.sendStatus(200); // обязательно 200, чтобы Telegram не выдавал ошибки
+        res.sendStatus(200); // важно! всегда возвращаем 200
       });
   } catch (err) {
     console.error("Webhook упал:", err);
