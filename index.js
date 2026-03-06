@@ -4,20 +4,29 @@ const TelegramBot = require("node-telegram-bot-api");
 const app = express();
 const port = process.env.PORT || 3000;
 
-// Токен бота (можно пока вставить прямо)
+// Твой токен бота
 const token = "8663683179:AAHoW_TvnDxGELWlo4RvcQvVhIwdMAKdqWM";
 
-const bot = new TelegramBot(token, { polling: true });
+const bot = new TelegramBot(token);
 
-// отдаём все файлы из папки public
+// Разрешаем серверу обрабатывать JSON (Telegram присылает POST с JSON)
+app.use(express.json());
+
+// Отдаём все файлы из папки public
 app.use(express.static("public"));
 
-// открываем index.html из public
+// Главная страница — index.html из public
 app.get("/", (req, res) => {
   res.sendFile(__dirname + "/public/index.html");
 });
 
-// обработчик /start
+// Webhook маршрут, куда Telegram будет присылать обновления
+app.post(`/bot${token}`, (req, res) => {
+  bot.processUpdate(req.body); // передаем обновление боту
+  res.sendStatus(200);
+});
+
+// Команда /start
 bot.onText(/\/start/, (msg) => {
   bot.sendMessage(msg.chat.id, "🚀 Добро пожаловать в SafeTrade!", {
     reply_markup: {
@@ -25,7 +34,7 @@ bot.onText(/\/start/, (msg) => {
         [
           {
             text: "🚀 Открыть SafeTrade",
-            web_app: { url: "https://safetrade-bot-production.up.railway.app" } // обязательно с https://
+            web_app: { url: "https://safetrade-bot-production.up.railway.app" }
           }
         ]
       ]
@@ -33,6 +42,12 @@ bot.onText(/\/start/, (msg) => {
   });
 });
 
+// Устанавливаем webhook
+bot.setWebHook(`https://safetrade-bot-production.up.railway.app/bot${token}`)
+  .then(() => console.log("Webhook установлен"))
+  .catch(console.error);
+
+// Запуск сервера
 app.listen(port, () => {
   console.log("Server started on port " + port);
 });
