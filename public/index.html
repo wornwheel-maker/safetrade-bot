@@ -95,7 +95,7 @@ input{
 
   // TON Connect
   const tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
-    manifestUrl: 'https://your-domain.com/tonconnect-manifest.json',
+    manifestUrl: 'https://your-domain.com/tonconnect-manifest.json', // <- нужно поменять на реальный URL
     buttonRootId: 'ton-connect'
   });
 
@@ -110,20 +110,10 @@ input{
     const partner = document.getElementById("partnerUsername").value.trim();
     const price = document.getElementById("giftPrice").value.trim();
 
-    if (!selectedGift) {
-      alert("Выберите подарок!");
-      return;
-    }
-    if (!partner) {
-      alert("Введите username партнёра!");
-      return;
-    }
-    if (!price || isNaN(price)) {
-      alert("Введите цену в TON!");
-      return;
-    }
+    if (!selectedGift) { alert("Выберите подарок!"); return; }
+    if (!partner) { alert("Введите username партнёра!"); return; }
+    if (!price || isNaN(price)) { alert("Введите цену в TON!"); return; }
 
-    // Пока базовая симуляция сделки
     alert(
       "✅ Сделка создана!\n\n" +
       "Подарок: " + selectedGift + "\n" +
