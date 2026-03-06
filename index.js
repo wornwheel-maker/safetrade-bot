@@ -3,9 +3,6 @@ const TelegramBot = require("node-telegram-bot-api");
 
 const app = express();
 const port = process.env.PORT || 3000;
-app.listen(port, () => {
-  console.log("Server started on port " + port);
-});
 
 const token = process.env.BOT_TOKEN;
 
@@ -24,7 +21,7 @@ bot.onText(/\/start/, (msg) => {
         [
           {
             text: "🚀 Открыть SafeTrade",
-            web_app: { url: "https://ТВОЙ-ДОМЕН.railway.app" }
+            web_app: { url: "https://ТВОЙ-REAL-DOMAIN.railway.app" }
           }
         ]
       ]
@@ -33,5 +30,5 @@ bot.onText(/\/start/, (msg) => {
 });
 
 app.listen(port, () => {
-  console.log("Server started");
+  console.log("Server started on port " + port);
 });
