@@ -1,60 +1,83 @@
-const express = require("express");
-const TelegramBot = require("node-telegram-bot-api");
+const express = require("express")
+const TelegramBot = require("node-telegram-bot-api")
 
-const app = express();
-const port = process.env.PORT || 8080;
+const app = express()
+const port = process.env.PORT || 8080
 
-// Токен твоего бота
-const token = "8663683179:AAHoW_TvnDxGELWlo4RvcQvVhIwdMAKdqWM";
+const token = "8663683179:AAHoW_TvnDxGELWlo4RvcQvVhIwdMAKdqWM"
 
-// Инициализация бота через webhook (polling убран!)
-const bot = new TelegramBot(token, { webHook: true });
+const bot = new TelegramBot(token)
 
-// Разрешаем Express парсить JSON
-app.use(express.json());
+app.use(express.json())
+app.use(express.static("public"))
 
-// Отдаём MiniApp из папки public
-app.use(express.static("public"));
-app.get("/", (req, res) => {
-  res.sendFile(__dirname + "/public/index.html");
-});
+const URL = "https://safetrade-bot-production.up.railway.app"
 
-// Webhook маршрут — Telegram шлёт сюда обновления
-app.post(`/bot${token}`, (req, res) => {
-  try {
+bot.setWebHook(`${URL}/bot${token}`)
+
+app.post(`/bot${token}`, (req,res)=>{
     bot.processUpdate(req.body)
-      .then(() => res.sendStatus(200)) // всегда 200
-      .catch(err => {
-        console.error("Ошибка processUpdate:", err);
-        res.sendStatus(200);
-      });
-  } catch (err) {
-    console.error("Webhook упал:", err);
-    res.sendStatus(200);
-  }
-});
+    res.sendStatus(200)
+})
 
-// Обработчик /start
-bot.onText(/\/start/, (msg) => {
-  console.log("/start от:", msg.chat.id);
-  bot.sendMessage(msg.chat.id, "🚀 Добро пожаловать в SafeTrade!", {
-    reply_markup: {
-      inline_keyboard: [
-        [
-          {
-            text: "🚀 Открыть SafeTrade",
-            web_app: { url: "https://safetrade-bot-production.up.railway.app/?v=100" }
-          }
-        ]
-      ]
-    }
-  });
-});
+bot.onText(/\/start/, (msg)=>{
+    bot.sendMessage(msg.chat.id,"🚀 SafeTrade Marketplace",{
+        reply_markup:{
+            inline_keyboard:[
+                [
+                    {
+                        text:"🚀 Открыть SafeTrade",
+                        web_app:{ url: URL }
+                    }
+                ]
+            ]
+        }
+    })
+})
 
-// Устанавливаем webhook
-bot.setWebHook(`https://safetrade-bot-production.up.railway.app/bot${token}`)
-  .then(() => console.log("Webhook установлен"))
-  .catch(console.error);
+/* ============================= */
+/* MARKET API */
+/* ============================= */
 
-// Запуск сервера
-app.listen(port, () => console.log("Server started on port " + port));
+const prices = {
+ "Heart Locket": 12,
+ "Plush Pepe": 7,
+ "Diamond Ring": 20,
+ "Crystal Ball": 15,
+ "Astral Shard": 18,
+ "Jelly Bunny": 5,
+ "Magic Potion": 9,
+ "Top Hat": 11
+}
+
+app.get("/api/prices",(req,res)=>{
+    res.json(prices)
+})
+
+/* ============================= */
+/* TRADE HISTORY */
+/* ============================= */
+
+let trades = []
+
+app.get("/api/trades",(req,res)=>{
+    res.json(trades)
+})
+
+app.post("/api/trade",(req,res)=>{
+
+ const trade = {
+  user:req.body.user,
+  gift:req.body.gift,
+  price:req.body.price,
+  date:new Date()
+ }
+
+ trades.push(trade)
+
+ res.json({status:"ok"})
+})
+
+app.listen(port,()=>{
+ console.log("Server started on port "+port)
+})
