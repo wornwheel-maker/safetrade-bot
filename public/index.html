@@ -4,128 +4,240 @@
 <meta charset="UTF-8">
 <title>SafeTrade</title>
 
-<!-- Telegram Mini App + TON Connect -->
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
-<script src="https://unpkg.com/@tonconnect/ui@latest/dist/tonconnect-ui.min.js"></script>
 
 <style>
+
 body{
-  font-family: Arial;
-  background:#0f172a;
-  color:white;
-  text-align:center;
-  padding:40px;
+background:#0f172a;
+color:white;
+font-family:Arial;
+margin:0;
 }
 
-h1, h2{
-  margin-bottom:20px;
+header{
+padding:20px;
+text-align:center;
+font-size:22px;
+font-weight:bold;
+}
+
+.container{
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:20px;
+padding:20px;
+}
+
+.inventory{
+background:#1e293b;
+padding:15px;
+border-radius:12px;
+}
+
+.grid{
+display:grid;
+grid-template-columns:repeat(4,1fr);
+gap:10px;
+margin-top:10px;
+}
+
+.item{
+background:#334155;
+padding:10px;
+border-radius:8px;
+text-align:center;
+cursor:pointer;
+}
+
+.item:hover{
+background:#475569;
+}
+
+.trade{
+background:#1e293b;
+padding:15px;
+border-radius:12px;
+margin:20px;
+}
+
+.trade-area{
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:20px;
+margin-top:10px;
+}
+
+.dropzone{
+border:2px dashed #475569;
+padding:20px;
+border-radius:10px;
+min-height:80px;
 }
 
 button{
-  padding:12px 20px;
-  font-size:16px;
-  border:none;
-  border-radius:8px;
-  cursor:pointer;
-  margin-top:10px;
+width:100%;
+padding:12px;
+border:none;
+border-radius:8px;
+background:#2ea6ff;
+color:white;
+margin-top:15px;
 }
 
-input{
-  padding:10px;
-  width:200px;
-  border-radius:8px;
-  border:none;
-  margin-bottom:10px;
-  background:#1a1a2e;
-  color:white;
+.price{
+margin-top:8px;
+color:#94a3b8;
 }
 
-.gifts{
-  display:flex;
-  justify-content:center;
-  gap:15px;
-  margin-bottom:20px;
-}
-
-.gift{
-  padding:10px;
-  background:#242424;
-  border-radius:10px;
-  cursor:pointer;
-}
-
-.gift:hover{
-  background:#2e2e2e;
-}
-
-#ton-connect{
-  margin-bottom:30px;
-}
 </style>
 </head>
 
 <body>
 
-<h1>🚀 SafeTrade</h1>
+<header>SafeTrade</header>
 
-<!-- TON Wallet -->
-<div id="ton-connect"></div>
+<div class="container">
 
-<!-- Подарки -->
-<div id="safe-trade-container">
-  <h2>🎁 Выбери подарок</h2>
-  <div class="gifts">
-    <div class="gift" onclick="selectGift('Bear')">🐻 Bear</div>
-    <div class="gift" onclick="selectGift('Diamond')">💎 Diamond</div>
-    <div class="gift" onclick="selectGift('Rocket')">🚀 Rocket</div>
-    <div class="gift" onclick="selectGift('Heart')">❤️ Heart</div>
-  </div>
-  <p id="selectedGift" style="font-weight:bold;">Выбранный подарок: нет</p>
+<div class="inventory">
 
-  <h2>🤝 Создать трейд</h2>
-  <input id="partnerUsername" placeholder="@username партнёра"><br>
-  <input id="giftPrice" placeholder="Цена в TON"><br>
-  <button onclick="createDeal()" style="background:#2ea6ff; color:white;">Создать сделку</button>
+<h3>Your Inventory</h3>
+
+<div id="myInventory" class="grid"></div>
+
+</div>
+
+<div class="inventory">
+
+<h3>Partner Inventory</h3>
+
+<div id="partnerInventory" class="grid"></div>
+
+</div>
+
+</div>
+
+<div class="trade">
+
+<h3>Trade Window</h3>
+
+<div class="trade-area">
+
+<div>
+<h4>Your Offer</h4>
+<div id="myTrade" class="dropzone"></div>
+</div>
+
+<div>
+<h4>Partner Offer</h4>
+<div id="partnerTrade" class="dropzone"></div>
+</div>
+
+</div>
+
+<div style="margin-top:15px">
+
+Offer Price TON
+<input id="priceInput" type="number" value="0" style="width:100%;padding:10px;border-radius:8px;border:none">
+
+<div class="price">Market price: <span id="market">0</span> TON</div>
+<div class="price">Fee (5%): <span id="fee">0</span> TON</div>
+<div class="price">Total: <span id="total">0</span> TON</div>
+
+<button onclick="makeOffer()">Make Offer</button>
+
+</div>
+
 </div>
 
 <script>
-  // Telegram Mini App
-  const tg = window.Telegram.WebApp;
-  tg.expand();
 
-  // TON Connect
-  const tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
-    manifestUrl: 'https://your-domain.com/tonconnect-manifest.json', // <- поменяй на свой реальный URL
-    buttonRootId: 'ton-connect'
-  });
+const tg = window.Telegram.WebApp
+tg.expand()
 
-  let selectedGift = null;
+const gifts = [
+{name:"Heart Locket",price:15},
+{name:"Plush Pepe",price:20},
+{name:"Heroic Helmet",price:22},
+{name:"Ion Gem",price:30},
+{name:"Durov Cap",price:50},
+{name:"Magic Potion",price:16},
+{name:"Mini Oscar",price:40},
+{name:"Astral Shard",price:35},
+{name:"Lunar Snake",price:4},
+{name:"Snow Globe",price:4},
+{name:"Candy Cane",price:2},
+{name:"Diamond Ring",price:20},
+{name:"Crystal Ball",price:14},
+{name:"Toy Bear",price:6},
+{name:"Star Notepad",price:4},
+{name:"Flying Broom",price:9}
+]
 
-  function selectGift(gift){
-    selectedGift = gift;
-    document.getElementById("selectedGift").innerText = "Выбранный подарок: " + gift;
-  }
+const myInventory=document.getElementById("myInventory")
+const partnerInventory=document.getElementById("partnerInventory")
 
-  function createDeal(){
-    const partner = document.getElementById("partnerUsername").value.trim();
-    const price = document.getElementById("giftPrice").value.trim();
+let marketPrice=0
 
-    if (!selectedGift) { alert("Выберите подарок!"); return; }
-    if (!partner) { alert("Введите username партнёра!"); return; }
-    if (!price || isNaN(price)) { alert("Введите цену в TON!"); return; }
+function createItem(gift,zone){
 
-    alert(
-      "✅ Сделка создана!\n\n" +
-      "Подарок: " + selectedGift + "\n" +
-      "Партнёр: " + partner + "\n" +
-      "Цена: " + price + " TON"
-    );
+let el=document.createElement("div")
 
-    selectedGift = null;
-    document.getElementById("selectedGift").innerText = "Выбранный подарок: нет";
-    document.getElementById("partnerUsername").value = "";
-    document.getElementById("giftPrice").value = "";
-  }
+el.className="item"
+el.innerText=gift.name
+
+el.onclick=()=>{
+
+let item=document.createElement("div")
+item.className="item"
+item.innerText=gift.name
+
+zone.appendChild(item)
+
+marketPrice+=gift.price
+updateMarket()
+
+}
+
+return el
+
+}
+
+gifts.forEach(gift=>{
+myInventory.appendChild(createItem(gift,document.getElementById("myTrade")))
+})
+
+gifts.slice(0,10).forEach(gift=>{
+partnerInventory.appendChild(createItem(gift,document.getElementById("partnerTrade")))
+})
+
+function updateMarket(){
+
+document.getElementById("market").innerText=marketPrice
+updateFee()
+
+}
+
+document.getElementById("priceInput").addEventListener("input",updateFee)
+
+function updateFee(){
+
+let price=Number(document.getElementById("priceInput").value)
+
+let fee=price*0.05
+
+document.getElementById("fee").innerText=fee.toFixed(2)
+
+document.getElementById("total").innerText=(price+fee).toFixed(2)
+
+}
+
+function makeOffer(){
+
+alert("Trade offer sent!")
+
+}
+
 </script>
 
 </body>
