@@ -1,10 +1,12 @@
 <!DOCTYPE html>
 <html>
 <head>
+
 <meta charset="UTF-8">
 <title>SafeTrade</title>
 
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
+<script src="https://unpkg.com/@tonconnect/ui@latest/dist/tonconnect-ui.min.js"></script>
 
 <style>
 
@@ -12,231 +14,267 @@ body{
 background:#0f172a;
 color:white;
 font-family:Arial;
+text-align:center;
 margin:0;
+padding:20px;
 }
 
 header{
-padding:20px;
-text-align:center;
-font-size:22px;
-font-weight:bold;
+font-size:28px;
+margin-bottom:20px;
 }
 
-.container{
-display:grid;
-grid-template-columns:1fr 1fr;
-gap:20px;
-padding:20px;
+.tabs{
+display:flex;
+justify-content:center;
+gap:10px;
+margin-bottom:20px;
 }
 
-.inventory{
+.tab{
+padding:10px 16px;
 background:#1e293b;
-padding:15px;
-border-radius:12px;
+border-radius:8px;
+cursor:pointer;
 }
 
 .grid{
 display:grid;
-grid-template-columns:repeat(4,1fr);
-gap:10px;
-margin-top:10px;
+grid-template-columns:repeat(2,1fr);
+gap:12px;
 }
 
-.item{
-background:#334155;
-padding:10px;
-border-radius:8px;
-text-align:center;
+.gift{
+background:#1e293b;
+padding:12px;
+border-radius:10px;
 cursor:pointer;
 }
 
-.item:hover{
-background:#475569;
+.gift img{
+width:60px;
 }
 
-.trade{
+input{
+padding:10px;
+border-radius:6px;
+border:none;
+margin:6px;
 background:#1e293b;
-padding:15px;
-border-radius:12px;
-margin:20px;
-}
-
-.trade-area{
-display:grid;
-grid-template-columns:1fr 1fr;
-gap:20px;
-margin-top:10px;
-}
-
-.dropzone{
-border:2px dashed #475569;
-padding:20px;
-border-radius:10px;
-min-height:80px;
+color:white;
 }
 
 button{
-width:100%;
-padding:12px;
+padding:10px 16px;
 border:none;
-border-radius:8px;
-background:#2ea6ff;
+border-radius:6px;
+cursor:pointer;
+background:#3b82f6;
 color:white;
-margin-top:15px;
 }
 
-.price{
-margin-top:8px;
-color:#94a3b8;
+#ton-connect{
+margin-bottom:20px;
 }
 
 </style>
+
 </head>
 
 <body>
 
-<header>SafeTrade</header>
+<header>🚀 SafeTrade</header>
 
-<div class="container">
+<div id="ton-connect"></div>
 
-<div class="inventory">
+<div class="tabs">
 
-<h3>Your Inventory</h3>
+<div class="tab" onclick="openTab('market')">Marketplace</div>
 
-<div id="myInventory" class="grid"></div>
+<div class="tab" onclick="openTab('nft')">NFT Gifts</div>
 
-</div>
+<div class="tab" onclick="openTab('trade')">Trade</div>
 
-<div class="inventory">
-
-<h3>Partner Inventory</h3>
-
-<div id="partnerInventory" class="grid"></div>
+<div class="tab" onclick="openTab('history')">History</div>
 
 </div>
 
-</div>
-
-<div class="trade">
-
-<h3>Trade Window</h3>
-
-<div class="trade-area">
-
-<div>
-<h4>Your Offer</h4>
-<div id="myTrade" class="dropzone"></div>
-</div>
-
-<div>
-<h4>Partner Offer</h4>
-<div id="partnerTrade" class="dropzone"></div>
-</div>
-
-</div>
-
-<div style="margin-top:15px">
-
-Offer Price TON
-<input id="priceInput" type="number" value="0" style="width:100%;padding:10px;border-radius:8px;border:none">
-
-<div class="price">Market price: <span id="market">0</span> TON</div>
-<div class="price">Fee (5%): <span id="fee">0</span> TON</div>
-<div class="price">Total: <span id="total">0</span> TON</div>
-
-<button onclick="makeOffer()">Make Offer</button>
-
-</div>
-
-</div>
+<div id="content"></div>
 
 <script>
 
 const tg = window.Telegram.WebApp
 tg.expand()
 
-const gifts = [
-{name:"Heart Locket",price:15},
-{name:"Plush Pepe",price:20},
-{name:"Heroic Helmet",price:22},
-{name:"Ion Gem",price:30},
-{name:"Durov Cap",price:50},
-{name:"Magic Potion",price:16},
-{name:"Mini Oscar",price:40},
-{name:"Astral Shard",price:35},
-{name:"Lunar Snake",price:4},
-{name:"Snow Globe",price:4},
-{name:"Candy Cane",price:2},
-{name:"Diamond Ring",price:20},
-{name:"Crystal Ball",price:14},
-{name:"Toy Bear",price:6},
-{name:"Star Notepad",price:4},
-{name:"Flying Broom",price:9}
+const tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
+ manifestUrl:'https://ton.org/tonconnect-manifest.json',
+ buttonRootId:'ton-connect'
+})
+
+let prices={}
+
+async function loadPrices(){
+
+ const r = await fetch("/api/prices")
+
+ prices = await r.json()
+
+}
+
+const gifts=[
+
+"Heart Locket",
+"Plush Pepe",
+"Diamond Ring",
+"Crystal Ball",
+"Astral Shard",
+"Jelly Bunny",
+"Magic Potion",
+"Top Hat"
+
 ]
 
-const myInventory=document.getElementById("myInventory")
-const partnerInventory=document.getElementById("partnerInventory")
+function openTab(tab){
 
-let marketPrice=0
+const content=document.getElementById("content")
 
-function createItem(gift,zone){
+if(tab==="market"){
 
-let el=document.createElement("div")
+let html="<h2>Marketplace</h2><div class='grid'>"
 
-el.className="item"
-el.innerText=gift.name
+gifts.forEach(g=>{
 
-el.onclick=()=>{
+html+=`
 
-let item=document.createElement("div")
-item.className="item"
-item.innerText=gift.name
+<div class="gift">
 
-zone.appendChild(item)
+<img src="https://dummyimage.com/80x80/333/fff&text=${g[0]}">
 
-marketPrice+=gift.price
-updateMarket()
+<div>${g}</div>
 
-}
+<div>Price: ${prices[g]||"-"} TON</div>
 
-return el
+</div>
 
-}
+`
 
-gifts.forEach(gift=>{
-myInventory.appendChild(createItem(gift,document.getElementById("myTrade")))
 })
 
-gifts.slice(0,10).forEach(gift=>{
-partnerInventory.appendChild(createItem(gift,document.getElementById("partnerTrade")))
+html+="</div>"
+
+content.innerHTML=html
+
+}
+
+if(tab==="nft"){
+
+let html="<h2>NFT Gifts</h2><div class='grid'>"
+
+gifts.forEach(g=>{
+
+html+=`
+
+<div class="gift">
+
+<img src="https://dummyimage.com/80x80/555/fff&text=${g[0]}">
+
+<div>${g}</div>
+
+</div>
+
+`
+
 })
 
-function updateMarket(){
+html+="</div>"
 
-document.getElementById("market").innerText=marketPrice
-updateFee()
-
-}
-
-document.getElementById("priceInput").addEventListener("input",updateFee)
-
-function updateFee(){
-
-let price=Number(document.getElementById("priceInput").value)
-
-let fee=price*0.05
-
-document.getElementById("fee").innerText=fee.toFixed(2)
-
-document.getElementById("total").innerText=(price+fee).toFixed(2)
+content.innerHTML=html
 
 }
 
-function makeOffer(){
+if(tab==="trade"){
 
-alert("Trade offer sent!")
+content.innerHTML=`
+
+<h2>Create Trade</h2>
+
+<input id="user" placeholder="@username"><br>
+
+<input id="gift" placeholder="Gift name"><br>
+
+<input id="price" placeholder="Price TON"><br>
+
+<button onclick="createTrade()">Create Trade</button>
+
+`
 
 }
+
+if(tab==="history"){
+
+loadTrades()
+
+}
+
+}
+
+async function createTrade(){
+
+const user=document.getElementById("user").value
+const gift=document.getElementById("gift").value
+const price=document.getElementById("price").value
+
+await fetch("/api/trade",{
+
+method:"POST",
+
+headers:{"Content-Type":"application/json"},
+
+body:JSON.stringify({
+
+user:user,
+
+gift:gift,
+
+price:price
+
+})
+
+})
+
+alert("Trade created")
+
+}
+
+async function loadTrades(){
+
+const r = await fetch("/api/trades")
+
+const trades = await r.json()
+
+let html="<h2>Trade History</h2>"
+
+trades.forEach(t=>{
+
+html+=`
+
+<div>
+
+${t.user} traded ${t.gift} for ${t.price} TON
+
+</div>
+
+`
+
+})
+
+document.getElementById("content").innerHTML=html
+
+}
+
+loadPrices()
+
+openTab("market")
 
 </script>
 
