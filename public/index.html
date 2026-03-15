@@ -4,7 +4,6 @@
 <head>
 
 <meta charset="UTF-8">
-
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <title>SafeTrade</title>
@@ -20,28 +19,28 @@ background:#0b0f19;
 color:white;
 }
 
-/* PAGE */
+/* PAGES */
 
 .page{
 display:none;
 padding:20px;
-padding-bottom:80px;
+padding-bottom:90px;
 }
 
 .active{
 display:block;
 }
 
-/* PROFILE HEADER */
+/* PROFILE */
 
 .profile{
 text-align:center;
-margin-top:20px;
+margin-top:25px;
 }
 
 .avatar{
-width:70px;
-height:70px;
+width:75px;
+height:75px;
 border-radius:50%;
 background:#1c243a;
 margin:auto;
@@ -57,7 +56,7 @@ font-size:18px;
 .balance{
 margin-top:20px;
 background:#141a2d;
-padding:15px;
+padding:16px;
 border-radius:14px;
 display:flex;
 justify-content:space-between;
@@ -67,9 +66,9 @@ align-items:center;
 .deposit{
 background:#3b82f6;
 border:none;
-color:white;
 padding:8px 14px;
 border-radius:10px;
+color:white;
 }
 
 /* MENU */
@@ -84,8 +83,6 @@ overflow:hidden;
 .menu-item{
 padding:16px;
 border-bottom:1px solid #1f2740;
-display:flex;
-justify-content:space-between;
 cursor:pointer;
 }
 
@@ -93,7 +90,7 @@ cursor:pointer;
 border:none;
 }
 
-/* INVENTORY */
+/* GRID */
 
 .grid{
 display:grid;
@@ -162,7 +159,7 @@ opacity:1;
 
 <body>
 
-<!-- PROFILE PAGE -->
+<!-- PROFILE -->
 
 <div id="profile" class="page active">
 
@@ -178,7 +175,7 @@ opacity:1;
 
 <div>
 Balance<br>
-<b>0 TON</b>
+<b>1.19 TON</b>
 </div>
 
 <button class="deposit">Deposit</button>
@@ -192,7 +189,7 @@ Balance<br>
 </div>
 
 <div class="menu-item" onclick="openPage('trade')">
-⚔️ Trade
+⚔ Trade
 </div>
 
 <div class="menu-item" onclick="openPage('market')">
@@ -215,7 +212,6 @@ Balance<br>
 <div class="gift">Crystal Ball</div>
 <div class="gift">Diamond Ring</div>
 <div class="gift">Magic Potion</div>
-<div class="gift">Top Hat</div>
 <div class="gift">Astral Shard</div>
 
 </div>
@@ -229,7 +225,7 @@ Balance<br>
 
 <h2>Create Trade</h2>
 
-<input placeholder="@username">
+<input placeholder="@username partner">
 
 <input placeholder="Gift name">
 
@@ -267,15 +263,18 @@ Balance<br>
 </div>
 
 <div class="nav" onclick="openPage('trade')">
-⚔️<br>Trade
+⚔<br>Trade
 </div>
 
 <div class="nav" onclick="openPage('market')">
 🛒<br>Market
 </div>
 
+<div class="nav" onclick="openPage('inventory')">
+🎁<br>Inventory
 </div>
 
+</div>
 
 <script>
 
@@ -285,11 +284,9 @@ tg.expand()
 if(tg.initDataUnsafe.user){
 
 document.querySelector(".username").innerText =
-"@"+tg.initDataUnsafe.user.username
+"@" + tg.initDataUnsafe.user.username
 
 }
-
-/* PAGE SWITCH */
 
 function openPage(id){
 
