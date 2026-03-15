@@ -1,10 +1,11 @@
 const express = require("express")
+const fs = require("fs")
 const TelegramBot = require("node-telegram-bot-api")
 
 const app = express()
 const port = process.env.PORT || 8080
 
-const token = "8663683179:AAHoW_TvnDxGELWlo4RvcQvVhIwdMAKdqWM"
+const token = "ТВОЙ_ТОКЕН"
 
 const bot = new TelegramBot(token)
 
@@ -16,68 +17,112 @@ const URL = "https://safetrade-bot-production.up.railway.app"
 bot.setWebHook(`${URL}/bot${token}`)
 
 app.post(`/bot${token}`, (req,res)=>{
-    bot.processUpdate(req.body)
-    res.sendStatus(200)
+bot.processUpdate(req.body)
+res.sendStatus(200)
 })
 
 bot.onText(/\/start/, (msg)=>{
-    bot.sendMessage(msg.chat.id,"🚀 SafeTrade Marketplace",{
-        reply_markup:{
-            inline_keyboard:[
-                [
-                    {
-                        text:"🚀 Открыть SafeTrade",
-                        web_app:{ url: URL }
-                    }
-                ]
-            ]
-        }
-    })
+
+bot.sendMessage(msg.chat.id,"🚀 SafeTrade",{
+reply_markup:{
+inline_keyboard:[
+[
+{
+text:"Open SafeTrade",
+web_app:{url:URL}
+}
+]
+]
+}
 })
 
-/* ============================= */
-/* MARKET API */
-/* ============================= */
+})
 
-const prices = {
- "Heart Locket": 12,
- "Plush Pepe": 7,
- "Diamond Ring": 20,
- "Crystal Ball": 15,
- "Astral Shard": 18,
- "Jelly Bunny": 5,
- "Magic Potion": 9,
- "Top Hat": 11
+/* DATABASE */
+
+function readDB(){
+
+return JSON.parse(
+fs.readFileSync("./database/db.json")
+)
+
 }
 
+function writeDB(data){
+
+fs.writeFileSync(
+"./database/db.json",
+JSON.stringify(data,null,2)
+)
+
+}
+
+/* PRICES */
+
 app.get("/api/prices",(req,res)=>{
-    res.json(prices)
+
+const db = readDB()
+
+res.json(db.prices)
+
 })
 
-/* ============================= */
-/* TRADE HISTORY */
-/* ============================= */
+/* INVENTORY */
 
-let trades = []
+app.get("/api/inventory/:user",(req,res)=>{
 
-app.get("/api/trades",(req,res)=>{
-    res.json(trades)
+const db = readDB()
+
+const items = db.inventory.filter(
+i => i.user == req.params.user
+)
+
+res.json(items)
+
 })
+
+/* CREATE TRADE */
 
 app.post("/api/trade",(req,res)=>{
 
- const trade = {
-  user:req.body.user,
-  gift:req.body.gift,
-  price:req.body.price,
-  date:new Date()
- }
+const db = readDB()
 
- trades.push(trade)
+const trade = {
 
- res.json({status:"ok"})
+id:Date.now(),
+
+seller:req.body.seller,
+
+buyer:req.body.buyer,
+
+gift:req.body.gift,
+
+price:req.body.price,
+
+status:"pending"
+
+}
+
+db.trades.push(trade)
+
+writeDB(db)
+
+res.json(trade)
+
+})
+
+/* TRADE HISTORY */
+
+app.get("/api/trades",(req,res)=>{
+
+const db = readDB()
+
+res.json(db.trades)
+
 })
 
 app.listen(port,()=>{
- console.log("Server started on port "+port)
+
+console.log("SafeTrade server started")
+
 })
