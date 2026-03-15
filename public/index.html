@@ -1,10 +1,11 @@
 <!DOCTYPE html>
 <html>
+
 <head>
 
 <meta charset="UTF-8">
 
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <title>SafeTrade</title>
 
@@ -19,31 +20,42 @@ background:#0b0f19;
 color:white;
 }
 
-/* HEADER */
+/* PAGE */
 
-.header{
+.page{
+display:none;
+padding:20px;
+padding-bottom:80px;
+}
+
+.active{
+display:block;
+}
+
+/* PROFILE HEADER */
+
+.profile{
 text-align:center;
-padding:25px 0;
+margin-top:20px;
 }
 
 .avatar{
 width:70px;
 height:70px;
 border-radius:50%;
-background:#1a2238;
+background:#1c243a;
 margin:auto;
 }
 
 .username{
 margin-top:10px;
 font-size:18px;
-opacity:0.9;
 }
 
 /* BALANCE */
 
 .balance{
-margin:15px;
+margin-top:20px;
 background:#141a2d;
 padding:15px;
 border-radius:14px;
@@ -52,49 +64,33 @@ justify-content:space-between;
 align-items:center;
 }
 
-.balance button{
+.deposit{
 background:#3b82f6;
 border:none;
+color:white;
 padding:8px 14px;
 border-radius:10px;
-color:white;
 }
 
-/* MENU CARDS */
+/* MENU */
 
 .menu{
-margin:15px;
+margin-top:15px;
 background:#141a2d;
 border-radius:14px;
 overflow:hidden;
 }
 
 .menu-item{
+padding:16px;
+border-bottom:1px solid #1f2740;
 display:flex;
 justify-content:space-between;
-align-items:center;
-padding:16px;
-border-bottom:1px solid #1d243a;
 cursor:pointer;
 }
 
 .menu-item:last-child{
-border-bottom:none;
-}
-
-.menu-item span{
-opacity:0.8;
-}
-
-/* PAGE */
-
-.page{
-display:none;
-padding:20px;
-}
-
-.active{
-display:block;
+border:none;
 }
 
 /* INVENTORY */
@@ -103,19 +99,42 @@ display:block;
 display:grid;
 grid-template-columns:repeat(3,1fr);
 gap:10px;
+margin-top:15px;
 }
 
 .gift{
 background:#141a2d;
-padding:12px;
+padding:10px;
 border-radius:10px;
 text-align:center;
 font-size:13px;
 }
 
+/* INPUT */
+
+input{
+width:100%;
+padding:12px;
+border-radius:10px;
+border:none;
+background:#141a2d;
+color:white;
+margin-top:10px;
+}
+
+button{
+margin-top:10px;
+width:100%;
+padding:12px;
+border:none;
+border-radius:10px;
+background:#3b82f6;
+color:white;
+}
+
 /* BOTTOM NAV */
 
-.bottom-nav{
+.bottom{
 position:fixed;
 bottom:0;
 left:0;
@@ -126,23 +145,28 @@ justify-content:space-around;
 padding:12px 0;
 }
 
-.nav-item{
+.nav{
 text-align:center;
 font-size:12px;
-opacity:0.7;
+opacity:0.6;
 cursor:pointer;
 }
 
-.nav-item.active{
+.nav.active{
 opacity:1;
 }
 
 </style>
+
 </head>
 
 <body>
 
-<div class="header">
+<!-- PROFILE PAGE -->
+
+<div id="profile" class="page active">
+
+<div class="profile">
 
 <div class="avatar"></div>
 
@@ -152,31 +176,33 @@ opacity:1;
 
 <div class="balance">
 
-<div>Balance<br><b>1.19 TON</b></div>
+<div>
+Balance<br>
+<b>0 TON</b>
+</div>
 
-<button>Deposit</button>
+<button class="deposit">Deposit</button>
 
 </div>
 
 <div class="menu">
 
 <div class="menu-item" onclick="openPage('inventory')">
-🎁 <span>Inventory</span>
+🎁 Inventory
 </div>
 
 <div class="menu-item" onclick="openPage('trade')">
-⚔️ <span>Trade</span>
+⚔️ Trade
 </div>
 
 <div class="menu-item" onclick="openPage('market')">
-🛒 <span>Marketplace</span>
-</div>
-
-<div class="menu-item" onclick="openPage('ref')">
-👥 <span>Referral Program</span>
+🛒 Marketplace
 </div>
 
 </div>
+
+</div>
+
 
 <!-- INVENTORY -->
 
@@ -196,23 +222,23 @@ opacity:1;
 
 </div>
 
+
 <!-- TRADE -->
 
 <div id="trade" class="page">
 
 <h2>Create Trade</h2>
 
-<input placeholder="@username" style="width:100%;padding:12px;border-radius:10px;border:none;background:#141a2d;color:white;margin-bottom:10px">
+<input placeholder="@username">
 
-<input placeholder="Gift name" style="width:100%;padding:12px;border-radius:10px;border:none;background:#141a2d;color:white;margin-bottom:10px">
+<input placeholder="Gift name">
 
-<input placeholder="Price TON" style="width:100%;padding:12px;border-radius:10px;border:none;background:#141a2d;color:white">
+<input placeholder="Price TON">
 
-<button style="margin-top:12px;width:100%;padding:12px;background:#3b82f6;border:none;border-radius:10px;color:white">
-Send Trade
-</button>
+<button>Create Trade</button>
 
 </div>
+
 
 <!-- MARKET -->
 
@@ -231,40 +257,25 @@ Send Trade
 
 </div>
 
-<!-- REF -->
-
-<div id="ref" class="page">
-
-<h2>Referral Program</h2>
-
-<p>Invite friends and earn 5% commission</p>
-
-<input value="https://t.me/safetrade_bot?start=ref123"
-style="width:100%;padding:12px;border-radius:10px;border:none;background:#141a2d;color:white">
-
-</div>
 
 <!-- BOTTOM NAV -->
 
-<div class="bottom-nav">
+<div class="bottom">
 
-<div class="nav-item active" onclick="openPage('inventory')">
-🎁<br>Inventory
-</div>
-
-<div class="nav-item" onclick="openPage('trade')">
-⚔️<br>Trade
-</div>
-
-<div class="nav-item" onclick="openPage('market')">
-🛒<br>Market
-</div>
-
-<div class="nav-item" onclick="openPage('ref')">
+<div class="nav active" onclick="openPage('profile')">
 👤<br>Profile
 </div>
 
+<div class="nav" onclick="openPage('trade')">
+⚔️<br>Trade
 </div>
+
+<div class="nav" onclick="openPage('market')">
+🛒<br>Market
+</div>
+
+</div>
+
 
 <script>
 
@@ -278,6 +289,8 @@ document.querySelector(".username").innerText =
 
 }
 
+/* PAGE SWITCH */
+
 function openPage(id){
 
 document.querySelectorAll(".page").forEach(p=>{
@@ -285,6 +298,10 @@ p.classList.remove("active")
 })
 
 document.getElementById(id).classList.add("active")
+
+document.querySelectorAll(".nav").forEach(n=>{
+n.classList.remove("active")
+})
 
 }
 
