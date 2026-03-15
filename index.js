@@ -5,7 +5,7 @@ const TelegramBot = require("node-telegram-bot-api")
 const app = express()
 const port = process.env.PORT || 8080
 
-const token = "ТВОЙ_ТОКЕН"
+const token = "8663683179:AAHoW_TvnDxGELWlo4RvcQvVhIwdMAKdqWM"
 
 const bot = new TelegramBot(token)
 
