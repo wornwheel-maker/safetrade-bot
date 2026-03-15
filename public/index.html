@@ -3,278 +3,290 @@
 <head>
 
 <meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
 <title>SafeTrade</title>
 
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
-<script src="https://unpkg.com/@tonconnect/ui@latest/dist/tonconnect-ui.min.js"></script>
 
 <style>
 
 body{
-background:#0f172a;
-color:white;
-font-family:Arial;
-text-align:center;
 margin:0;
+font-family:system-ui;
+background:#0b0f19;
+color:white;
+}
+
+/* HEADER */
+
+.header{
+text-align:center;
+padding:25px 0;
+}
+
+.avatar{
+width:70px;
+height:70px;
+border-radius:50%;
+background:#1a2238;
+margin:auto;
+}
+
+.username{
+margin-top:10px;
+font-size:18px;
+opacity:0.9;
+}
+
+/* BALANCE */
+
+.balance{
+margin:15px;
+background:#141a2d;
+padding:15px;
+border-radius:14px;
+display:flex;
+justify-content:space-between;
+align-items:center;
+}
+
+.balance button{
+background:#3b82f6;
+border:none;
+padding:8px 14px;
+border-radius:10px;
+color:white;
+}
+
+/* MENU CARDS */
+
+.menu{
+margin:15px;
+background:#141a2d;
+border-radius:14px;
+overflow:hidden;
+}
+
+.menu-item{
+display:flex;
+justify-content:space-between;
+align-items:center;
+padding:16px;
+border-bottom:1px solid #1d243a;
+cursor:pointer;
+}
+
+.menu-item:last-child{
+border-bottom:none;
+}
+
+.menu-item span{
+opacity:0.8;
+}
+
+/* PAGE */
+
+.page{
+display:none;
 padding:20px;
 }
 
-header{
-font-size:28px;
-margin-bottom:20px;
+.active{
+display:block;
 }
 
-.tabs{
-display:flex;
-justify-content:center;
-gap:10px;
-margin-bottom:20px;
-}
-
-.tab{
-padding:10px 16px;
-background:#1e293b;
-border-radius:8px;
-cursor:pointer;
-}
+/* INVENTORY */
 
 .grid{
 display:grid;
-grid-template-columns:repeat(2,1fr);
-gap:12px;
+grid-template-columns:repeat(3,1fr);
+gap:10px;
 }
 
 .gift{
-background:#1e293b;
+background:#141a2d;
 padding:12px;
 border-radius:10px;
+text-align:center;
+font-size:13px;
+}
+
+/* BOTTOM NAV */
+
+.bottom-nav{
+position:fixed;
+bottom:0;
+left:0;
+right:0;
+background:#0e1323;
+display:flex;
+justify-content:space-around;
+padding:12px 0;
+}
+
+.nav-item{
+text-align:center;
+font-size:12px;
+opacity:0.7;
 cursor:pointer;
 }
 
-.gift img{
-width:60px;
-}
-
-input{
-padding:10px;
-border-radius:6px;
-border:none;
-margin:6px;
-background:#1e293b;
-color:white;
-}
-
-button{
-padding:10px 16px;
-border:none;
-border-radius:6px;
-cursor:pointer;
-background:#3b82f6;
-color:white;
-}
-
-#ton-connect{
-margin-bottom:20px;
+.nav-item.active{
+opacity:1;
 }
 
 </style>
-
 </head>
 
 <body>
 
-<header>🚀 SafeTrade</header>
+<div class="header">
 
-<div id="ton-connect"></div>
+<div class="avatar"></div>
 
-<div class="tabs">
-
-<div class="tab" onclick="openTab('market')">Marketplace</div>
-
-<div class="tab" onclick="openTab('nft')">NFT Gifts</div>
-
-<div class="tab" onclick="openTab('trade')">Trade</div>
-
-<div class="tab" onclick="openTab('history')">History</div>
+<div class="username">@user</div>
 
 </div>
 
-<div id="content"></div>
+<div class="balance">
+
+<div>Balance<br><b>1.19 TON</b></div>
+
+<button>Deposit</button>
+
+</div>
+
+<div class="menu">
+
+<div class="menu-item" onclick="openPage('inventory')">
+🎁 <span>Inventory</span>
+</div>
+
+<div class="menu-item" onclick="openPage('trade')">
+⚔️ <span>Trade</span>
+</div>
+
+<div class="menu-item" onclick="openPage('market')">
+🛒 <span>Marketplace</span>
+</div>
+
+<div class="menu-item" onclick="openPage('ref')">
+👥 <span>Referral Program</span>
+</div>
+
+</div>
+
+<!-- INVENTORY -->
+
+<div id="inventory" class="page">
+
+<h2>Inventory</h2>
+
+<div class="grid">
+
+<div class="gift">Crystal Ball</div>
+<div class="gift">Diamond Ring</div>
+<div class="gift">Magic Potion</div>
+<div class="gift">Top Hat</div>
+<div class="gift">Astral Shard</div>
+
+</div>
+
+</div>
+
+<!-- TRADE -->
+
+<div id="trade" class="page">
+
+<h2>Create Trade</h2>
+
+<input placeholder="@username" style="width:100%;padding:12px;border-radius:10px;border:none;background:#141a2d;color:white;margin-bottom:10px">
+
+<input placeholder="Gift name" style="width:100%;padding:12px;border-radius:10px;border:none;background:#141a2d;color:white;margin-bottom:10px">
+
+<input placeholder="Price TON" style="width:100%;padding:12px;border-radius:10px;border:none;background:#141a2d;color:white">
+
+<button style="margin-top:12px;width:100%;padding:12px;background:#3b82f6;border:none;border-radius:10px;color:white">
+Send Trade
+</button>
+
+</div>
+
+<!-- MARKET -->
+
+<div id="market" class="page">
+
+<h2>Marketplace</h2>
+
+<div class="grid">
+
+<div class="gift">Heart Locket<br>12 TON</div>
+<div class="gift">Plush Pepe<br>7 TON</div>
+<div class="gift">Diamond Ring<br>20 TON</div>
+<div class="gift">Crystal Ball<br>15 TON</div>
+
+</div>
+
+</div>
+
+<!-- REF -->
+
+<div id="ref" class="page">
+
+<h2>Referral Program</h2>
+
+<p>Invite friends and earn 5% commission</p>
+
+<input value="https://t.me/safetrade_bot?start=ref123"
+style="width:100%;padding:12px;border-radius:10px;border:none;background:#141a2d;color:white">
+
+</div>
+
+<!-- BOTTOM NAV -->
+
+<div class="bottom-nav">
+
+<div class="nav-item active" onclick="openPage('inventory')">
+🎁<br>Inventory
+</div>
+
+<div class="nav-item" onclick="openPage('trade')">
+⚔️<br>Trade
+</div>
+
+<div class="nav-item" onclick="openPage('market')">
+🛒<br>Market
+</div>
+
+<div class="nav-item" onclick="openPage('ref')">
+👤<br>Profile
+</div>
+
+</div>
 
 <script>
 
 const tg = window.Telegram.WebApp
 tg.expand()
 
-const tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
- manifestUrl:'https://ton.org/tonconnect-manifest.json',
- buttonRootId:'ton-connect'
+if(tg.initDataUnsafe.user){
+
+document.querySelector(".username").innerText =
+"@"+tg.initDataUnsafe.user.username
+
+}
+
+function openPage(id){
+
+document.querySelectorAll(".page").forEach(p=>{
+p.classList.remove("active")
 })
 
-let prices={}
-
-async function loadPrices(){
-
- const r = await fetch("/api/prices")
-
- prices = await r.json()
+document.getElementById(id).classList.add("active")
 
 }
-
-const gifts=[
-
-"Heart Locket",
-"Plush Pepe",
-"Diamond Ring",
-"Crystal Ball",
-"Astral Shard",
-"Jelly Bunny",
-"Magic Potion",
-"Top Hat"
-
-]
-
-function openTab(tab){
-
-const content=document.getElementById("content")
-
-if(tab==="market"){
-
-let html="<h2>Marketplace</h2><div class='grid'>"
-
-gifts.forEach(g=>{
-
-html+=`
-
-<div class="gift">
-
-<img src="https://dummyimage.com/80x80/333/fff&text=${g[0]}">
-
-<div>${g}</div>
-
-<div>Price: ${prices[g]||"-"} TON</div>
-
-</div>
-
-`
-
-})
-
-html+="</div>"
-
-content.innerHTML=html
-
-}
-
-if(tab==="nft"){
-
-let html="<h2>NFT Gifts</h2><div class='grid'>"
-
-gifts.forEach(g=>{
-
-html+=`
-
-<div class="gift">
-
-<img src="https://dummyimage.com/80x80/555/fff&text=${g[0]}">
-
-<div>${g}</div>
-
-</div>
-
-`
-
-})
-
-html+="</div>"
-
-content.innerHTML=html
-
-}
-
-if(tab==="trade"){
-
-content.innerHTML=`
-
-<h2>Create Trade</h2>
-
-<input id="user" placeholder="@username"><br>
-
-<input id="gift" placeholder="Gift name"><br>
-
-<input id="price" placeholder="Price TON"><br>
-
-<button onclick="createTrade()">Create Trade</button>
-
-`
-
-}
-
-if(tab==="history"){
-
-loadTrades()
-
-}
-
-}
-
-async function createTrade(){
-
-const user=document.getElementById("user").value
-const gift=document.getElementById("gift").value
-const price=document.getElementById("price").value
-
-await fetch("/api/trade",{
-
-method:"POST",
-
-headers:{"Content-Type":"application/json"},
-
-body:JSON.stringify({
-
-user:user,
-
-gift:gift,
-
-price:price
-
-})
-
-})
-
-alert("Trade created")
-
-}
-
-async function loadTrades(){
-
-const r = await fetch("/api/trades")
-
-const trades = await r.json()
-
-let html="<h2>Trade History</h2>"
-
-trades.forEach(t=>{
-
-html+=`
-
-<div>
-
-${t.user} traded ${t.gift} for ${t.price} TON
-
-</div>
-
-`
-
-})
-
-document.getElementById("content").innerHTML=html
-
-}
-
-loadPrices()
-
-openTab("market")
 
 </script>
 
