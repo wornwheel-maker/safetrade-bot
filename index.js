@@ -1,5 +1,6 @@
 const express = require("express");
 const TelegramBot = require("node-telegram-bot-api");
+const fs = require("fs");
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -10,24 +11,34 @@ const bot = new TelegramBot(token, { polling: true });
 app.use(express.json());
 app.use(express.static("public"));
 
-// 🔥 база юзеров (временно в памяти)
-const users = {};
+// 📦 файл базы
+const DB_FILE = "users.json";
 
-// главная
-app.get("/", (req, res) => {
-  res.send("SafeTrade работает 🚀");
-});
+// загрузка базы
+let users = {};
+if (fs.existsSync(DB_FILE)) {
+  users = JSON.parse(fs.readFileSync(DB_FILE));
+}
+
+// сохранение
+function saveUsers() {
+  fs.writeFileSync(DB_FILE, JSON.stringify(users, null, 2));
+}
 
 // START
 bot.onText(/\/start/, (msg) => {
   const username = msg.from.username;
 
-  if (username) {
-    users[username.toLowerCase()] = msg.chat.id;
-    console.log("Сохранили:", username, msg.chat.id);
+  if (!username) {
+    return bot.sendMessage(msg.chat.id, "У тебя нет username в Telegram ❌");
   }
 
-  bot.sendMessage(msg.chat.id, "🚀 SafeTrade", {
+  users[username.toLowerCase()] = msg.chat.id;
+  saveUsers();
+
+  console.log("Сохранили:", username, msg.chat.id);
+
+  bot.sendMessage(msg.chat.id, "🚀 SafeTrade подключён", {
     reply_markup: {
       inline_keyboard: [
         [
@@ -53,8 +64,7 @@ app.post("/create-trade", async (req, res) => {
 
   if (!chatId) {
     return res.send({
-      success: false,
-      error: "User not found or didn't start bot"
+      success: false
     });
   }
 
