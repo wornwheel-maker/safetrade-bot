@@ -2,6 +2,7 @@
 <html>
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>SafeTrade</title>
 
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
@@ -12,6 +13,8 @@ body {
   font-family: Arial;
   background: #0f172a;
   color: white;
+  max-width: 500px;
+  margin: auto;
 }
 
 .header {
@@ -21,19 +24,19 @@ body {
 }
 
 .container {
-  padding: 20px;
+  padding: 15px;
 }
 
 .card {
   background: #1e293b;
   padding: 15px;
   border-radius: 12px;
-  margin-bottom: 15px;
+  margin-bottom: 10px;
 }
 
 .button {
   width: 100%;
-  padding: 15px;
+  padding: 14px;
   background: #2ea6ff;
   border: none;
   border-radius: 10px;
@@ -56,6 +59,7 @@ body {
   position: fixed;
   bottom: 0;
   width: 100%;
+  max-width: 500px;
   background: #020617;
   display: flex;
   justify-content: space-around;
@@ -89,7 +93,10 @@ const tg = window.Telegram.WebApp;
 tg.expand();
 
 let selectedGift = "None";
+let savedPartner = "";
+let savedPrice = "";
 
+// NAVIGATION
 function openPage(page) {
   document.getElementById("nav-trade").classList.remove("active");
   document.getElementById("nav-inventory").classList.remove("active");
@@ -102,19 +109,19 @@ function openPage(page) {
   if (page === "profile") renderProfile();
 }
 
-// TRADE
+// TRADE PAGE
 function renderTrade() {
   document.getElementById("app").innerHTML = `
     <div class="card">
       <h3>Create Trade</h3>
 
-      <input class="input" id="partner" placeholder="@username">
+      <input class="input" id="partner" placeholder="Chat ID (например 123456789)" value="${savedPartner}">
 
       <div style="margin-top:10px;">You give</div>
       <button class="button" onclick="openPage('inventory')">${selectedGift}</button>
 
       <div style="margin-top:10px;">You receive (TON)</div>
-      <input class="input" id="price" placeholder="15">
+      <input class="input" id="price" placeholder="15" value="${savedPrice}">
 
       <div style="margin-top:10px; font-size:14px;">
         Fee: 2%<br>
@@ -125,11 +132,21 @@ function renderTrade() {
     </div>
   `;
 
-  document.getElementById("price").oninput = updateFee;
+  document.getElementById("price").oninput = (e) => {
+    savedPrice = e.target.value;
+    updateFee();
+  };
+
+  document.getElementById("partner").oninput = (e) => {
+    savedPartner = e.target.value;
+  };
+
+  updateFee();
 }
 
+// FEE
 function updateFee() {
-  const price = parseFloat(document.getElementById("price").value) || 0;
+  const price = parseFloat(savedPrice) || 0;
   document.getElementById("final").innerText = (price * 0.98).toFixed(2);
 }
 
@@ -161,7 +178,7 @@ function renderProfile() {
   document.getElementById("app").innerHTML = `
     <div class="card">
       <h3>Profile</h3>
-      <div>@user</div>
+      <div>@${tg.initDataUnsafe.user?.username || "user"}</div>
       <div style="margin-top:10px;">Balance: 0 TON</div>
       <button class="button">Deposit</button>
       <button class="button">Withdraw</button>
@@ -171,12 +188,9 @@ function renderProfile() {
 
 // CREATE TRADE
 function createTrade() {
-  const partner = document.getElementById("partner").value;
-  const price = document.getElementById("price").value;
-
-  if (!partner) return alert("Enter username");
-  if (!price) return alert("Enter price");
-  if (selectedGift === "None") return alert("Select gift");
+  if (!savedPartner) return alert("Введите Chat ID");
+  if (!savedPrice) return alert("Введите цену");
+  if (selectedGift === "None") return alert("Выбери подарок");
 
   fetch("/create-trade", {
     method: "POST",
@@ -184,18 +198,18 @@ function createTrade() {
       "Content-Type": "application/json"
     },
     body: JSON.stringify({
-      partner: partner.replace("@", ""),
+      partner: Number(savedPartner),
       gift: selectedGift,
-      price: price,
-      fromUser: Telegram.WebApp.initDataUnsafe.user?.username || "unknown"
+      price: savedPrice,
+      fromUser: tg.initDataUnsafe.user?.username || "unknown"
     })
   })
   .then(res => res.json())
   .then(data => {
     if (data.success) {
-      alert("Trade sent 🚀");
+      alert("Trade отправлен 🚀");
     } else {
-      alert("Error");
+      alert("Ошибка отправки");
     }
   });
 }
