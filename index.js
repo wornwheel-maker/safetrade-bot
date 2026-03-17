@@ -10,12 +10,23 @@ const bot = new TelegramBot(token, { polling: true });
 app.use(express.json());
 app.use(express.static("public"));
 
+// 🔥 база юзеров (временно в памяти)
+const users = {};
+
+// главная
 app.get("/", (req, res) => {
   res.send("SafeTrade работает 🚀");
 });
 
 // START
 bot.onText(/\/start/, (msg) => {
+  const username = msg.from.username;
+
+  if (username) {
+    users[username.toLowerCase()] = msg.chat.id;
+    console.log("Сохранили:", username, msg.chat.id);
+  }
+
   bot.sendMessage(msg.chat.id, "🚀 SafeTrade", {
     reply_markup: {
       inline_keyboard: [
@@ -34,10 +45,21 @@ bot.onText(/\/start/, (msg) => {
 
 // CREATE TRADE
 app.post("/create-trade", async (req, res) => {
-  const { partner, gift, price, fromUser } = req.body;
+  let { partner, gift, price, fromUser } = req.body;
+
+  partner = partner.replace("@", "").toLowerCase();
+
+  const chatId = users[partner];
+
+  if (!chatId) {
+    return res.send({
+      success: false,
+      error: "User not found or didn't start bot"
+    });
+  }
 
   try {
-    await bot.sendMessage(partner, `
+    await bot.sendMessage(chatId, `
 📦 Trade Offer
 
 👤 From: @${fromUser}
