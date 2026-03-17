@@ -96,7 +96,7 @@ let selectedGift = "None";
 let savedPartner = "";
 let savedPrice = "";
 
-// NAVIGATION
+// NAV
 function openPage(page) {
   document.getElementById("nav-trade").classList.remove("active");
   document.getElementById("nav-inventory").classList.remove("active");
@@ -109,13 +109,13 @@ function openPage(page) {
   if (page === "profile") renderProfile();
 }
 
-// TRADE PAGE
+// TRADE
 function renderTrade() {
   document.getElementById("app").innerHTML = `
     <div class="card">
       <h3>Create Trade</h3>
 
-      <input class="input" id="partner" placeholder="Chat ID (например 123456789)" value="${savedPartner}">
+      <input class="input" id="partner" placeholder="@username" value="${savedPartner}">
 
       <div style="margin-top:10px;">You give</div>
       <button class="button" onclick="openPage('inventory')">${selectedGift}</button>
@@ -188,7 +188,7 @@ function renderProfile() {
 
 // CREATE TRADE
 function createTrade() {
-  if (!savedPartner) return alert("Введите Chat ID");
+  if (!savedPartner) return alert("Введите username");
   if (!savedPrice) return alert("Введите цену");
   if (selectedGift === "None") return alert("Выбери подарок");
 
@@ -198,7 +198,7 @@ function createTrade() {
       "Content-Type": "application/json"
     },
     body: JSON.stringify({
-      partner: Number(savedPartner),
+      partner: savedPartner,
       gift: selectedGift,
       price: savedPrice,
       fromUser: tg.initDataUnsafe.user?.username || "unknown"
@@ -209,7 +209,7 @@ function createTrade() {
     if (data.success) {
       alert("Trade отправлен 🚀");
     } else {
-      alert("Ошибка отправки");
+      alert("Пользователь не найден или не нажал /start");
     }
   });
 }
