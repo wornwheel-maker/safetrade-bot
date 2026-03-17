@@ -1,307 +1,218 @@
 <!DOCTYPE html>
 <html>
-
 <head>
-
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 <title>SafeTrade</title>
 
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 
 <style>
-
-body{
-margin:0;
-font-family:system-ui;
-background:#0b0f19;
-color:white;
+body {
+  margin: 0;
+  font-family: Arial;
+  background: #0f172a;
+  color: white;
 }
 
-/* PAGES */
-
-.page{
-display:none;
-padding:20px;
-padding-bottom:90px;
+/* Header */
+.header {
+  padding: 20px;
+  font-size: 22px;
+  font-weight: bold;
 }
 
-.active{
-display:block;
+/* Container */
+.container {
+  padding: 20px;
 }
 
-/* PROFILE */
-
-.profile{
-text-align:center;
-margin-top:25px;
+/* Card */
+.card {
+  background: #1e293b;
+  padding: 15px;
+  border-radius: 12px;
+  margin-bottom: 15px;
 }
 
-.avatar{
-width:75px;
-height:75px;
-border-radius:50%;
-background:#1c243a;
-margin:auto;
+/* Button */
+.button {
+  width: 100%;
+  padding: 15px;
+  background: #2ea6ff;
+  border: none;
+  border-radius: 10px;
+  color: white;
+  font-size: 16px;
+  margin-top: 10px;
 }
 
-.username{
-margin-top:10px;
-font-size:18px;
+/* Input */
+.input {
+  width: 100%;
+  padding: 12px;
+  margin-top: 10px;
+  border-radius: 8px;
+  border: none;
+  background: #0f172a;
+  color: white;
 }
 
-/* BALANCE */
-
-.balance{
-margin-top:20px;
-background:#141a2d;
-padding:16px;
-border-radius:14px;
-display:flex;
-justify-content:space-between;
-align-items:center;
+/* Bottom nav */
+.nav {
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  background: #020617;
+  display: flex;
+  justify-content: space-around;
+  padding: 10px 0;
 }
 
-.deposit{
-background:#3b82f6;
-border:none;
-padding:8px 14px;
-border-radius:10px;
-color:white;
+.nav div {
+  cursor: pointer;
+  color: #94a3b8;
 }
 
-/* MENU */
-
-.menu{
-margin-top:15px;
-background:#141a2d;
-border-radius:14px;
-overflow:hidden;
+.nav .active {
+  color: white;
 }
-
-.menu-item{
-padding:16px;
-border-bottom:1px solid #1f2740;
-cursor:pointer;
-}
-
-.menu-item:last-child{
-border:none;
-}
-
-/* GRID */
-
-.grid{
-display:grid;
-grid-template-columns:repeat(3,1fr);
-gap:10px;
-margin-top:15px;
-}
-
-.gift{
-background:#141a2d;
-padding:10px;
-border-radius:10px;
-text-align:center;
-font-size:13px;
-}
-
-/* INPUT */
-
-input{
-width:100%;
-padding:12px;
-border-radius:10px;
-border:none;
-background:#141a2d;
-color:white;
-margin-top:10px;
-}
-
-button{
-margin-top:10px;
-width:100%;
-padding:12px;
-border:none;
-border-radius:10px;
-background:#3b82f6;
-color:white;
-}
-
-/* BOTTOM NAV */
-
-.bottom{
-position:fixed;
-bottom:0;
-left:0;
-right:0;
-background:#0e1323;
-display:flex;
-justify-content:space-around;
-padding:12px 0;
-}
-
-.nav{
-text-align:center;
-font-size:12px;
-opacity:0.6;
-cursor:pointer;
-}
-
-.nav.active{
-opacity:1;
-}
-
 </style>
-
 </head>
 
 <body>
 
-<!-- PROFILE -->
+<div class="header">SafeTrade</div>
 
-<div id="profile" class="page active">
+<div class="container" id="app"></div>
 
-<div class="profile">
-
-<div class="avatar"></div>
-
-<div class="username">@user</div>
-
-</div>
-
-<div class="balance">
-
-<div>
-Balance<br>
-<b>1.19 TON</b>
-</div>
-
-<button class="deposit">Deposit</button>
-
-</div>
-
-<div class="menu">
-
-<div class="menu-item" onclick="openPage('inventory')">
-🎁 Inventory
-</div>
-
-<div class="menu-item" onclick="openPage('trade')">
-⚔ Trade
-</div>
-
-<div class="menu-item" onclick="openPage('market')">
-🛒 Marketplace
-</div>
-
-</div>
-
-</div>
-
-
-<!-- INVENTORY -->
-
-<div id="inventory" class="page">
-
-<h2>Inventory</h2>
-
-<div class="grid">
-
-<div class="gift">Crystal Ball</div>
-<div class="gift">Diamond Ring</div>
-<div class="gift">Magic Potion</div>
-<div class="gift">Astral Shard</div>
-
-</div>
-
-</div>
-
-
-<!-- TRADE -->
-
-<div id="trade" class="page">
-
-<h2>Create Trade</h2>
-
-<input placeholder="@username partner">
-
-<input placeholder="Gift name">
-
-<input placeholder="Price TON">
-
-<button>Create Trade</button>
-
-</div>
-
-
-<!-- MARKET -->
-
-<div id="market" class="page">
-
-<h2>Marketplace</h2>
-
-<div class="grid">
-
-<div class="gift">Heart Locket<br>12 TON</div>
-<div class="gift">Plush Pepe<br>7 TON</div>
-<div class="gift">Diamond Ring<br>20 TON</div>
-<div class="gift">Crystal Ball<br>15 TON</div>
-
-</div>
-
-</div>
-
-
-<!-- BOTTOM NAV -->
-
-<div class="bottom">
-
-<div class="nav active" onclick="openPage('profile')">
-👤<br>Profile
-</div>
-
-<div class="nav" onclick="openPage('trade')">
-⚔<br>Trade
-</div>
-
-<div class="nav" onclick="openPage('market')">
-🛒<br>Market
-</div>
-
-<div class="nav" onclick="openPage('inventory')">
-🎁<br>Inventory
-</div>
-
+<div class="nav">
+  <div onclick="openPage('trade')" id="nav-trade" class="active">Trade</div>
+  <div onclick="openPage('inventory')" id="nav-inventory">Inventory</div>
+  <div onclick="openPage('profile')" id="nav-profile">Profile</div>
 </div>
 
 <script>
+const tg = window.Telegram.WebApp;
+tg.expand();
 
-const tg = window.Telegram.WebApp
-tg.expand()
+function openPage(page) {
+  document.getElementById("nav-trade").classList.remove("active");
+  document.getElementById("nav-inventory").classList.remove("active");
+  document.getElementById("nav-profile").classList.remove("active");
 
-if(tg.initDataUnsafe.user){
+  document.getElementById("nav-" + page).classList.add("active");
 
-document.querySelector(".username").innerText =
-"@" + tg.initDataUnsafe.user.username
-
+  if (page === "trade") renderTrade();
+  if (page === "inventory") renderInventory();
+  if (page === "profile") renderProfile();
 }
 
-function openPage(id){
+// ---------- TRADE ----------
+function renderTrade() {
+  document.getElementById("app").innerHTML = `
+    <div class="card">
+      <h3>Create Trade</h3>
 
-document.querySelectorAll(".page").forEach(p=>{
-p.classList.remove("active")
-})
+      <input class="input" id="partner" placeholder="@username">
 
-document.getElementById(id).classList.add("active")
+      <div style="margin-top:10px;">You give</div>
+      <button class="button" onclick="selectGift()">Select Gift</button>
 
-document.querySelectorAll(".nav").forEach(n=>{
-n.classList.remove("active")
-})
+      <div style="margin-top:10px;">You receive (TON)</div>
+      <input class="input" id="price" placeholder="15">
 
+      <div style="margin-top:10px; font-size:14px;">
+        Fee: 2%<br>
+        You receive: <span id="final">0</span> TON
+      </div>
+
+      <button class="button" onclick="createTrade()">Create Trade</button>
+    </div>
+
+    <div class="card">
+      <h3>Active Trades</h3>
+      <div>No trades yet</div>
+    </div>
+  `;
+
+  document.getElementById("price").oninput = updateFee;
 }
 
+function updateFee() {
+  const price = parseFloat(document.getElementById("price").value) || 0;
+  const final = price * 0.98;
+  document.getElementById("final").innerText = final.toFixed(2);
+}
+
+let selectedGift = "None";
+
+function selectGift() {
+  openPage("inventory");
+}
+
+// ---------- INVENTORY ----------
+function renderInventory() {
+  document.getElementById("app").innerHTML = `
+    <div class="card">
+      <h3>Your Inventory</h3>
+
+      ${renderGift("Crystal Ball")}
+      ${renderGift("Lunar Snake")}
+      ${renderGift("Eternal Candle")}
+      ${renderGift("Berry Box")}
+    </div>
+  `;
+}
+
+function renderGift(name) {
+  return `
+    <div class="card" onclick="chooseGift('${name}')">
+      ${name}
+    </div>
+  `;
+}
+
+function chooseGift(name) {
+  selectedGift = name;
+  alert("Selected: " + name);
+  openPage("trade");
+}
+
+// ---------- PROFILE ----------
+function renderProfile() {
+  document.getElementById("app").innerHTML = `
+    <div class="card">
+      <h3>Profile</h3>
+      <div>@username</div>
+
+      <div style="margin-top:10px;">
+        Balance: 0 TON
+      </div>
+
+      <button class="button">Deposit</button>
+      <button class="button">Withdraw</button>
+    </div>
+  `;
+}
+
+// ---------- CREATE TRADE ----------
+function createTrade() {
+  const partner = document.getElementById("partner").value;
+  const price = document.getElementById("price").value;
+
+  if (!partner) return alert("Enter username");
+  if (!price) return alert("Enter price");
+
+  alert(
+    "Trade created!\n\n" +
+    "Partner: " + partner + "\n" +
+    "Gift: " + selectedGift + "\n" +
+    "Price: " + price + " TON"
+  );
+}
+
+// init
+openPage("trade");
 </script>
 
 </body>
