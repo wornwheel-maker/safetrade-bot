@@ -6,21 +6,33 @@ const app = express();
 const port = process.env.PORT || 3000;
 
 const token = "8663683179:AAHoW_TvnDxGELWlo4RvcQvVhIwdMAKdqWM";
-const bot = new TelegramBot(token, { polling: true });
+
+// ❌ УБРАЛИ polling
+const bot = new TelegramBot(token);
 
 app.use(express.json());
 app.use(express.static("public"));
 
-// 📦 файл базы
-const DB_FILE = "users.json";
+// URL твоего проекта
+const URL = "https://safetrade-bot-production.up.railway.app";
 
-// загрузка базы
+// webhook
+bot.setWebHook(`${URL}/bot${token}`);
+
+// Telegram будет слать сюда обновления
+app.post(`/bot${token}`, (req, res) => {
+  bot.processUpdate(req.body);
+  res.sendStatus(200);
+});
+
+// 📦 база
+const DB_FILE = "users.json";
 let users = {};
+
 if (fs.existsSync(DB_FILE)) {
   users = JSON.parse(fs.readFileSync(DB_FILE));
 }
 
-// сохранение
 function saveUsers() {
   fs.writeFileSync(DB_FILE, JSON.stringify(users, null, 2));
 }
@@ -30,7 +42,7 @@ bot.onText(/\/start/, (msg) => {
   const username = msg.from.username;
 
   if (!username) {
-    return bot.sendMessage(msg.chat.id, "У тебя нет username в Telegram ❌");
+    return bot.sendMessage(msg.chat.id, "У тебя нет username ❌");
   }
 
   users[username.toLowerCase()] = msg.chat.id;
@@ -38,14 +50,14 @@ bot.onText(/\/start/, (msg) => {
 
   console.log("Сохранили:", username, msg.chat.id);
 
-  bot.sendMessage(msg.chat.id, "🚀 SafeTrade подключён", {
+  bot.sendMessage(msg.chat.id, "🚀 SafeTrade", {
     reply_markup: {
       inline_keyboard: [
         [
           {
             text: "Открыть SafeTrade",
             web_app: {
-              url: "https://safetrade-bot-production.up.railway.app"
+              url: URL
             }
           }
         ]
@@ -63,9 +75,7 @@ app.post("/create-trade", async (req, res) => {
   const chatId = users[partner];
 
   if (!chatId) {
-    return res.send({
-      success: false
-    });
+    return res.send({ success: false });
   }
 
   try {
@@ -94,7 +104,7 @@ app.post("/create-trade", async (req, res) => {
   }
 });
 
-// BUTTONS
+// кнопки
 bot.on("callback_query", (query) => {
   if (query.data === "accept_trade") {
     bot.sendMessage(query.message.chat.id, "✅ Сделка принята");
