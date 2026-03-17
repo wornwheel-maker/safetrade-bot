@@ -14,7 +14,7 @@ app.get("/", (req, res) => {
   res.send("SafeTrade работает 🚀");
 });
 
-// /start
+// START
 bot.onText(/\/start/, (msg) => {
   bot.sendMessage(msg.chat.id, "🚀 SafeTrade", {
     reply_markup: {
@@ -32,7 +32,7 @@ bot.onText(/\/start/, (msg) => {
   });
 });
 
-// создание трейда
+// CREATE TRADE
 app.post("/create-trade", async (req, res) => {
   const { partner, gift, price, fromUser } = req.body;
 
@@ -62,7 +62,7 @@ app.post("/create-trade", async (req, res) => {
   }
 });
 
-// кнопки
+// BUTTONS
 bot.on("callback_query", (query) => {
   if (query.data === "accept_trade") {
     bot.sendMessage(query.message.chat.id, "✅ Сделка принята");
